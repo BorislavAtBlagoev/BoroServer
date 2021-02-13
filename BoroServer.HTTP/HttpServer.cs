@@ -6,11 +6,10 @@
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using System.Collections.Generic;
-    using System.Linq;
 
     public class HttpServer : IHttpServer
     {
-        IDictionary<string, Func<HttpRequest, HttpResponse>> routeTable =
+        private IDictionary<string, Func<HttpRequest, HttpResponse>> routeTable =
             new Dictionary<string, Func<HttpRequest, HttpResponse>>();
 
         public void AddRoute(string path, Func<HttpRequest, HttpResponse> action)
@@ -75,9 +74,7 @@
                 }
                 else
                 {
-                    var response404Body = $"<h1>Page not found!</h1>";
-                    var response404BodyAsByte = Encoding.UTF8.GetBytes(response404Body);
-                    response = new HttpResponse(response404BodyAsByte, "text/html", StatusCode.BadRequest);
+                    response = new HttpResponse(new byte[0], "text/html", StatusCode.BadRequest);
                 }
 
                 var resposeAsByte = Encoding.UTF8.GetBytes(response.ToString());

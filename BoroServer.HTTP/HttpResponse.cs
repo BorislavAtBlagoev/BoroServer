@@ -1,6 +1,7 @@
 ﻿namespace BoroServer.HTTP
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
 
     public class HttpResponse
@@ -15,13 +16,13 @@
             this.Headers.Add(new Header($"Content-Lenght: {this.Body?.Length ?? 0}"));
         }
 
-        public StatusCode StatusCode { get; set; }
+        public StatusCode StatusCode { get; }
 
-        public ICollection<Header> Headers { get; set; }
+        public ICollection<Header> Headers { get; }
 
-        public ICollection<ResponseCookie> Cookies { get; set; }
+        public ICollection<ResponseCookie> Cookies { get; }
 
-        public byte[] Body { get; set; }
+        public byte[] Body { get; }
 
         public override string ToString()
         {
@@ -36,7 +37,7 @@
 
             foreach (var cookie in this.Cookies)
             {
-                sb.Append("Set-Cookie: " + cookie.ToString() + HttpConstants.NewLine);
+                    sb.Append("Set-Cookie: " + cookie.ToString() + HttpConstants.NewLine);
             }
 
             sb.Append(HttpConstants.NewLine);
