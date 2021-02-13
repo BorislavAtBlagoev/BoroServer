@@ -10,10 +10,10 @@
 
     public class HttpServer : IHttpServer
     {
-        IDictionary<string, Func<HttpRequestWithCtor, HttpResponse>> routeTable =
-            new Dictionary<string, Func<HttpRequestWithCtor, HttpResponse>>();
+        IDictionary<string, Func<HttpRequest, HttpResponse>> routeTable =
+            new Dictionary<string, Func<HttpRequest, HttpResponse>>();
 
-        public void AddRoute(string path, Func<HttpRequestWithCtor, HttpResponse> action)
+        public void AddRoute(string path, Func<HttpRequest, HttpResponse> action)
         {
             if (!routeTable.ContainsKey(path))
             {
@@ -63,38 +63,26 @@
                     }
                 }
 
-                var html = $"<h1>Hello from Boro's Server111</h1>";
-                /*var response = "HTTP/1.1 200 OK" + HttpConstants.NewLine +
-                   "Server: BoroServer 2020" + HttpConstants.NewLine +
-                   "Content-Type: text/html; charset=utf-8" + HttpConstants.NewLine +
-                   "Content-Lenght: " + html.Length + HttpConstants.NewLine +
-                   HttpConstants.NewLine +
-                   html + HttpConstants.NewLine;*/
-
-                var body = Encoding.UTF8.GetBytes(html);
-                var response = new HttpResponse(body);
-                response.Cookies.Add(new ResponseCookie("sid=asdasdas"));
-                response.Cookies.FirstOrDefault().IsHttpOnly = true;
-                response.Cookies.FirstOrDefault().MaxAge = 60;
-                var responseAsBytes = Encoding.UTF8.GetBytes(response.ToString());
-                await stream.WriteAsync(responseAsBytes, 0, responseAsBytes.Length);
-                await stream.WriteAsync(body, 0, body.Length);
-
-
                 var requestAsString = Encoding.UTF8.GetString(data.ToArray());
-                var requestObj = new HttpRequestWithCtor(requestAsString);
-                var requestObjFromParser = HttpRequestParser.Parse(requestAsString);
-                
-                foreach (var cookie in requestObjFromParser.Cookies)
+                var request = HttpRequestParser.Parse(requestAsString);
+
+                HttpResponse response;
+
+                if (this.routeTable.ContainsKey(request.Path))
                 {
-                    Console.WriteLine(cookie.ToString());
+                    var action = this.routeTable[request.Path];
+                    response = action(request);
+                }
+                else
+                {
+                    var response404Body = $"<h1>Page not found!</h1>";
+                    var response404BodyAsByte = Encoding.UTF8.GetBytes(response404Body);
+                    response = new HttpResponse(response404BodyAsByte, "text/html", StatusCode.BadRequest);
                 }
 
-                foreach (var cookie in requestObjFromParser.Headers)
-                {
-                    Console.WriteLine(cookie.ToString());
-                }
-                Console.WriteLine($"{requestObjFromParser.Headers.Count} {requestObjFromParser.HttpVersion} {requestObjFromParser.Method} {requestObjFromParser.Path} {requestObjFromParser.Cookies.Count}");
+                var resposeAsByte = Encoding.UTF8.GetBytes(response.ToString());
+                await stream.WriteAsync(resposeAsByte, 0, resposeAsByte.Length);
+                await stream.WriteAsync(response.Body, 0, response.Body.Length);
             }
         }
     }
