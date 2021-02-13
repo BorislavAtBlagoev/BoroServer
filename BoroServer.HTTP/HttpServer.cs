@@ -77,7 +77,7 @@
                 var requestAsString = Encoding.UTF8.GetString(data.ToArray());
                 var requestObj = new HttpRequestWithCtor(requestAsString);
                 var requestObjFromParser = HttpRequestParser.Parse(requestAsString);
-                ;
+                
                 foreach (var cookie in requestObjFromParser.Cookies)
                 {
                     Console.WriteLine(cookie.ToString());

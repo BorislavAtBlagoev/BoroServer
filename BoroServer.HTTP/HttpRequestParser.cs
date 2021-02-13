@@ -6,10 +6,9 @@
 
     public static class HttpRequestParser
     {
-        private static bool isHeader = true;
-
         public static HttpRequest Parse(string requestAsString)
         {
+            bool isHeader = true;
             HttpRequest request = new HttpRequest();
             StringBuilder sb = new StringBuilder();
 
