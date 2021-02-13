@@ -6,6 +6,7 @@
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class HttpServer : IHttpServer
     {
@@ -62,16 +63,22 @@
                     }
                 }
 
-                var html = $"<h1>Hello from Boro's Server</h1>";
-                var response = "HTTP/1.1 200 OK" + HttpConstants.NewLine +
+                var html = $"<h1>Hello from Boro's Server111</h1>";
+                /*var response = "HTTP/1.1 200 OK" + HttpConstants.NewLine +
                    "Server: BoroServer 2020" + HttpConstants.NewLine +
                    "Content-Type: text/html; charset=utf-8" + HttpConstants.NewLine +
                    "Content-Lenght: " + html.Length + HttpConstants.NewLine +
                    HttpConstants.NewLine +
-                   html + HttpConstants.NewLine;
+                   html + HttpConstants.NewLine;*/
 
-                var responseByte = Encoding.UTF8.GetBytes(response);
-                await stream.WriteAsync(responseByte, 0, responseByte.Length);
+                var body = Encoding.UTF8.GetBytes(html);
+                var response = new HttpResponse(body);
+                response.Cookies.Add(new ResponseCookie("sid=asdasdas"));
+                response.Cookies.FirstOrDefault().IsHttpOnly = true;
+                response.Cookies.FirstOrDefault().MaxAge = 60;
+                var responseAsBytes = Encoding.UTF8.GetBytes(response.ToString());
+                await stream.WriteAsync(responseAsBytes, 0, responseAsBytes.Length);
+                await stream.WriteAsync(body, 0, body.Length);
 
 
                 var requestAsString = Encoding.UTF8.GetString(data.ToArray());
