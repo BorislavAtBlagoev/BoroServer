@@ -1,8 +1,6 @@
-﻿namespace BoroServer.MvcFramework
+﻿namespace BoroServer.HTTP
 {
     using System;
-
-    using BoroServer.HTTP;
 
     public class Route
     {

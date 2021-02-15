@@ -5,6 +5,7 @@
 
     using BoroServer.MvcFramework;
     using BoroServer.ConsoleTestApp.Controllers;
+    using BoroServer.HTTP;
 
     public class Program
     {
@@ -15,7 +16,7 @@
             CardController card = new CardController();
             StaticFilesAndTestsController staticFiles = new StaticFilesAndTestsController();
 
-            HashSet<Route> routeTable = new HashSet<Route>();
+            ICollection<Route> routeTable = new HashSet<Route>();
 
             routeTable.Add(new Route("/", home.Index));
 

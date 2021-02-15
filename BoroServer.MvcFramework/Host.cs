@@ -9,13 +9,7 @@
     {
         public static async Task RunAsync(ICollection<Route> routes, int port = 80)
         {
-            IHttpServer server = new HttpServer();
-
-            foreach (var route in routes)
-            {
-                server.AddRoute(route.Path, route.Action);
-            }
-
+            IHttpServer server = new HttpServer(routes);
             await server.StartAsync(port);
         }
     }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Text;
+    using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading.Tasks;
@@ -9,19 +10,11 @@
 
     public class HttpServer : IHttpServer
     {
-        private IDictionary<string, Func<HttpRequest, HttpResponse>> routeTable =
-            new Dictionary<string, Func<HttpRequest, HttpResponse>>();
+        private readonly IEnumerable<Route> routeTable;
 
-        public void AddRoute(string path, Func<HttpRequest, HttpResponse> action)
+        public HttpServer(IEnumerable<Route> routeTable)
         {
-            if (!routeTable.ContainsKey(path))
-            {
-                routeTable.Add(path, action);
-            }
-            else
-            {
-                routeTable[path] = action;
-            }
+            this.routeTable = routeTable;
         }
 
         public async Task StartAsync(int port)
@@ -66,11 +59,11 @@
                 var request = HttpRequestParser.Parse(requestAsString);
 
                 HttpResponse response;
+                var route = routeTable.FirstOrDefault(x => x.Path == request.Path);
 
-                if (this.routeTable.ContainsKey(request.Path))
+                if (route != null)
                 {
-                    var action = this.routeTable[request.Path];
-                    response = action(request);
+                    response = route.Action(request);
                 }
                 else
                 {
