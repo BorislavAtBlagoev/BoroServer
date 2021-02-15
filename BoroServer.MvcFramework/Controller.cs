@@ -17,9 +17,16 @@
                 controllerName + "/" +
                 viewPath + ".html");
 
-            var html =Encoding.UTF8.GetBytes(layout.Replace("@RenderBody()", body));
+            var html = Encoding.UTF8.GetBytes(layout.Replace("@RenderBody()", body));
 
             return new HttpResponse(html);
+        }
+
+        public HttpResponse Redirect(string path)
+        {
+            HttpResponse response = new HttpResponse(StatusCode.Redirect);
+            response.Headers.Add(new Header($"Location: {path}"));
+            return response;
         }
     }
 }

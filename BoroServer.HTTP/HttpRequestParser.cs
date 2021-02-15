@@ -18,7 +18,7 @@
             string headerLine = lines[0];
             string[] headerParts = headerLine.Split(' ');
 
-            request.Method = headerParts[0];
+            request.Method = (HttpMethod)Enum.Parse(typeof(HttpMethod), headerParts[0], true);
             request.Path = headerParts[1];
             request.HttpVersion = headerParts[2];
 

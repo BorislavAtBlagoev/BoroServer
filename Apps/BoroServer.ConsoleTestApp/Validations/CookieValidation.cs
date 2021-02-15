@@ -1,7 +1,8 @@
 ﻿namespace BoroServer.ConsoleTestApp.Validations
 {
-    using BoroServer.HTTP;
     using System.Linq;
+
+    using BoroServer.HTTP;
 
     public static class CookieValidation
     {

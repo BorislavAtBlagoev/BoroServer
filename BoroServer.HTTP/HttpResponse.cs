@@ -1,11 +1,18 @@
 ﻿namespace BoroServer.HTTP
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
+    using System.Collections.Generic;
 
     public class HttpResponse
     {
+        public HttpResponse(StatusCode statusCode)
+        {
+            this.Body = new byte[0];
+            this.StatusCode = statusCode;
+            this.Headers = new HashSet<Header>();
+            this.Cookies = new HashSet<ResponseCookie>();
+        }
+
         public HttpResponse(byte[] body, string contentType = "text/html", StatusCode statusCode = StatusCode.Ok)
         {
             this.Body = body;
@@ -30,6 +37,7 @@
 
             sb.Append($"HTTP/1.1 {(int)this.StatusCode} {this.StatusCode}" + HttpConstants.NewLine);
             sb.Append("Server: BoroServer 2021" + HttpConstants.NewLine);
+
             foreach (var header in this.Headers)
             {
                 sb.Append(header.ToString() + HttpConstants.NewLine);

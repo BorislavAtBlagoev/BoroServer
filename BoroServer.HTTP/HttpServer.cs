@@ -59,7 +59,8 @@
                 var request = HttpRequestParser.Parse(requestAsString);
 
                 HttpResponse response;
-                var route = routeTable.FirstOrDefault(x => x.Path.ToLower() == request.Path.ToLower());
+                var route = this.routeTable
+                    .FirstOrDefault(x => x.Path.ToLower() == request.Path.ToLower() && x.Method == request.Method);
 
                 if (route != null)
                 {

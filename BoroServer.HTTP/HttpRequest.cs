@@ -12,7 +12,7 @@
 
         public string Path { get; set; }
 
-        public string Method { get; set; }
+        public HttpMethod Method { get; set; }
 
         public string HttpVersion { get; set; }
 
