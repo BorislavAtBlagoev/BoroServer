@@ -1,19 +1,25 @@
-﻿using BoroServer.HTTP;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-
-namespace BoroServer.MvcFramework
+﻿namespace BoroServer.MvcFramework
 {
+    using System.IO;
+    using System.Text;
+    using System.Runtime.CompilerServices;
+
+    using BoroServer.HTTP;
+
     public abstract class Controller
     {
-        public HttpResponse View(string viewPath)
+        public HttpResponse View([CallerMemberName]string viewPath = null)
         {
-            var body = File.ReadAllBytes(viewPath);
-            var response = new HttpResponse(body);
+            var controllerName = this.GetType().Name.Replace("Controller", string.Empty);
+            var layout = File.ReadAllText(MvcFrameworkConstants.LayoutPath);
+          
+            var body = File.ReadAllText("Views/" + 
+                controllerName + "/" +
+                viewPath + ".html");
 
-            return response;
+            var html =Encoding.UTF8.GetBytes(layout.Replace("@RenderBody()", body));
+
+            return new HttpResponse(html);
         }
     }
 }

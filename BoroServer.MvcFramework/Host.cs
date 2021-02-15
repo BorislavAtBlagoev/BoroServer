@@ -7,9 +7,12 @@
 
     public static class Host
     {
-        public static async Task RunAsync(ICollection<Route> routes, int port = 80)
+        public static async Task RunAsync(IMvcApplication application, int port = 80)
         {
-            IHttpServer server = new HttpServer(routes);
+            ICollection<Route> routeTable = new HashSet<Route>();
+            application.Configure(routeTable);
+
+            IHttpServer server = new HttpServer(routeTable);
             await server.StartAsync(port);
         }
     }

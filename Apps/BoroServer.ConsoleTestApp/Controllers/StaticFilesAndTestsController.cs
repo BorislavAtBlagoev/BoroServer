@@ -9,7 +9,7 @@
 
     public class StaticFilesAndTestsController : Controller
     {
-        public HttpResponse ImageSendTest(HttpRequest request)
+        public HttpResponse Image(HttpRequest request)
         {
             var image = @"..\..\..\wwwroot\1.jpg";
             var imageAsByte = File.ReadAllBytes(image);
@@ -19,11 +19,8 @@
         }
 
         public HttpResponse Favicon(HttpRequest request)
-        {
-            var favicon = File.ReadAllBytes(@"..\..\..\wwwroot\favicon.ico");
-            var response = new HttpResponse(favicon, "image/vnd.microsoft.icon");
-
-            return response;
+        { 
+            return FileRead(@"wwwroot\favicon.ico", "image/vnd.microsoft.icon");
         }
 
         public HttpResponse Nikol(HttpRequest request)
@@ -43,6 +40,32 @@
             };
 
             return CookieValidation.CookieSender(request, response, responseCookie, responseCookie2);
+        }
+
+        public HttpResponse CustomCss(HttpRequest request)
+        {
+            return FileRead(@"wwwroot\css\custom.css", "text/css");
+        }
+
+        public HttpResponse BootstrapCss(HttpRequest request)
+        {
+            return FileRead(@"wwwroot\css\bootstrap.min.css", "text/css");
+        }
+
+        public HttpResponse CustomJs(HttpRequest request)
+        {
+            return FileRead(@"wwwroot\js\custom.js", "text/javascript");
+        }
+
+        public HttpResponse BootstrapJs(HttpRequest request)
+        {
+            return FileRead(@"wwwroot\js\bootstrap.bundle.min.js", "text/javascript");
+        }
+
+        private static HttpResponse FileRead(string path, string contentType)
+        {
+            var body = File.ReadAllBytes(path);
+            return new HttpResponse(body, contentType);
         }
     }
 }
