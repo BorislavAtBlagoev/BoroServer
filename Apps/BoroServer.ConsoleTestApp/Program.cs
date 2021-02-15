@@ -1,81 +1,36 @@
 ﻿namespace BoroServer.ConsoleTestApp
 {
-    using System.IO;
-    using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
+    using System.Collections.Generic;
 
-    using BoroServer.HTTP;
+    using BoroServer.MvcFramework;
+    using BoroServer.ConsoleTestApp.Controllers;
 
     public class Program
     {
         public static async Task Main()
         {
-            IHttpServer server = new HttpServer();
-            server.AddRoute("/", HomePage);
-            server.AddRoute("/Nikol", Nikol);
-            server.AddRoute("/favicon.ico", Favicon);
-            await server.StartAsync(80);
-        }
+            HomeController home = new HomeController();
+            UserController user = new UserController();
+            CardController card = new CardController();
+            StaticFilesAndTestsController staticFiles = new StaticFilesAndTestsController();
 
-        private static HttpResponse Favicon(HttpRequest request)
-        {
-            var favicon = File.ReadAllBytes(@"..\..\..\wwwroot\favicon.ico");
-            var response = new HttpResponse(favicon, "image/vnd.microsoft.icon");
+            HashSet<Route> routeTable = new HashSet<Route>();
 
-            return response;
-        }
+            routeTable.Add(new Route("/", home.Index));
 
-        private static HttpResponse Nikol(HttpRequest request)
-        {
-            var body = $"<h1>Nikol</h1>";
-            var bodyAsByte = Encoding.UTF8.GetBytes(body);
+            routeTable.Add(new Route("/Nikol", staticFiles.Nikol));
+            routeTable.Add(new Route("/favicon.ico", staticFiles.Favicon));
+            routeTable.Add(new Route("/Image", staticFiles.ImageSendTest));
 
-            var response = new HttpResponse(bodyAsByte);
-            var responseCookie = new ResponseCookie("sid=testtest123")
-            {
-                IsHttpOnly = true,
-                MaxAge = 60
-            };
-            var responseCookie2 = new ResponseCookie("sid2=aaaaaaaa")
-            {
-                MaxAge = 60 * 60
-            };
+            routeTable.Add(new Route("/Users/Register", user.Register));
+            routeTable.Add(new Route("/Users/Login", user.Login));
 
-            return CookieSender(request, response, responseCookie, responseCookie2);
-        }
+            routeTable.Add(new Route("/Cards/Add", card.Add));
+            routeTable.Add(new Route("/Cards/All", card.All));
+            routeTable.Add(new Route("/Cards/Collection", card.Collection));
 
-        private static HttpResponse HomePage(HttpRequest request)
-        {
-            var body = $"<h1>Hello from Boro's Server</h1>";
-            var bodyAsByte = Encoding.UTF8.GetBytes(body);
-            var response = new HttpResponse(bodyAsByte);
-
-            return response;
-        }
-
-        private static HttpResponse CookieSender(HttpRequest request, HttpResponse response, params ResponseCookie[] responseCookies)
-        {
-            if (request.Cookies.Count == 0)
-            {
-                foreach (var responseCookie in responseCookies)
-                {
-                    response.Cookies.Add(responseCookie);
-                }
-            }
-            else
-            {
-                foreach (var responseCookie in responseCookies)
-                {
-                    var isSended = request.Cookies.Any(x => x.Name == responseCookie.Name && x.Value == responseCookie.Value);
-                    if (!isSended)
-                    {
-                        response.Cookies.Add(responseCookie);
-                    }
-                }
-            }
-
-            return response;
+            await Host.RunAsync(routeTable);
         }
     }
 }
