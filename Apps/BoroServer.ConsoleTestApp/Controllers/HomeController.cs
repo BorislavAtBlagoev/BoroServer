@@ -7,7 +7,16 @@
     {
         public HttpResponse Index(HttpRequest request)
         {
-            return this.View();
+            this.Request = request;
+            if (this.IsSignedIn())
+            {
+                return this.Redirect("/Cards/All");
+            }            
+            else
+            {
+                return this.View();
+            }
+
         }
     }
 }

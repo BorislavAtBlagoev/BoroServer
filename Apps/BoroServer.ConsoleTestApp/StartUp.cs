@@ -27,8 +27,10 @@
             routeTable.Add(new Route("/css/custom.css", HttpMethod.GET, staticFiles.CustomCss));
 
             routeTable.Add(new Route("/Users/Register", HttpMethod.GET, user.Register));
+            routeTable.Add(new Route("/Users/Register", HttpMethod.POST, user.DoRegister));
             routeTable.Add(new Route("/Users/Login", HttpMethod.GET, user.Login));
             routeTable.Add(new Route("/Users/Login", HttpMethod.POST, user.DoLogin));
+            routeTable.Add(new Route("/Users/Logout", HttpMethod.GET, user.Logout));
 
             routeTable.Add(new Route("/Cards/Add", HttpMethod.GET, card.Add));
             routeTable.Add(new Route("/Cards/All", HttpMethod.GET, card.All));

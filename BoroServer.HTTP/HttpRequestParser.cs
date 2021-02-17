@@ -3,9 +3,14 @@
     using System;
     using System.Linq;
     using System.Text;
+    using System.Collections.Generic;
 
     public static class HttpRequestParser
     {
+        public static bool isGeneratedNow ;
+        public static IDictionary<string, IDictionary<string, string>> Sessions 
+            = new Dictionary<string, IDictionary<string, string>>();
+
         public static HttpRequest Parse(string requestAsString)
         {
             bool isHeader = true;
@@ -38,6 +43,16 @@
                 {
                     sb.Append(lines[i]).ToString();
                 }
+
+                if (lines[i].Contains("&"))
+                {
+                    var formDataParts = lines[i].Split('&');
+                    foreach (var formDataPart in formDataParts)
+                    {
+                        var formData = formDataPart.Split(new char[] { '=' }, 2);
+                        request.FormData[formData[0]] = formData[1];
+                    }
+                }
             }
 
             if (request.Headers.Any(x => x.Name == HttpConstants.RequestCookieHeader))
@@ -50,7 +65,27 @@
                 {
                     request.Cookies.Add(new Cookie(cookie));
                 }
+            }
 
+            var sessionCookie = request.Cookies.FirstOrDefault(x => x.Name == HttpConstants.SessionCookieName);
+            if (sessionCookie == null)
+            {
+                isGeneratedNow = true;
+                var sessionId = Guid.NewGuid().ToString();
+                request.Session = new Dictionary<string, string>();
+                Sessions.Add(sessionId, request.Session);
+                request.Cookies.Add(new Cookie(HttpConstants.SessionCookieName, sessionId));
+            }
+            else if (!Sessions.ContainsKey(sessionCookie.Value))
+            {
+                isGeneratedNow = false;
+                request.Session = new Dictionary<string, string>();
+                Sessions.Add(sessionCookie.Value, request.Session);
+            }
+            else
+            {
+                isGeneratedNow = false;
+                request.Session = Sessions[sessionCookie.Value];
             }
 
             request.Body = sb.ToString();

@@ -31,7 +31,7 @@ namespace BoroServer.MvcFramework.Tests
 
             IViewEngine viewEngine = new BoroViewEngine();
             var view = File.ReadAllText($"ViewTests/{fileName}.html");
-            var actualResult = viewEngine.GetHtml(view, viewModel);
+            var actualResult = viewEngine.GetHtml(view, viewModel, null);
             var expectedResult = File.ReadAllText($"ViewTests/{fileName}.Result.html");
             Assert.Equal(expectedResult, actualResult);
         }
@@ -43,7 +43,7 @@ namespace BoroServer.MvcFramework.Tests
             var actualResult = viewEngine.GetHtml(@"@foreach(var num in Model)
 {
 <p>@num</p>
-}", new List<int> { 1, 2, 3 });
+}", new List<int> { 1, 2, 3 }, null);
             var expectedResult = @"<p>1</p>
 <p>2</p>
 <p>3</p>";

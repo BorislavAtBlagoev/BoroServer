@@ -10,6 +10,12 @@
             this.Path = "/";
         }
 
+        public ResponseCookie(string name, string value)
+            : base(name, value)
+        {
+            this.Path = "/";
+        }
+
         public bool IsHttpOnly { get; set; }
 
         public int MaxAge { get; set; }

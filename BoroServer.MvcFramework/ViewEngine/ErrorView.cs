@@ -15,7 +15,7 @@
             this.csharpCode = csharpCode;
         }
 
-        public string ExecuteTemplate(object viewModel)
+        public string ExecuteTemplate(object viewModel, string user)
         {
             var html = new StringBuilder();
 
