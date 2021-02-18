@@ -1,10 +1,10 @@
 ﻿namespace BoroServer.ConsoleTestApp
 {
-    using System;
     using System.Collections.Generic;
 
     using BoroServer.HTTP;
     using BoroServer.MvcFramework;
+    using BoroServer.ConsoleTestApp.Services;
     using BoroServer.ConsoleTestApp.Controllers;
 
     public class StartUp : IMvcApplication
@@ -37,10 +37,9 @@
             routeTable.Add(new Route("/Cards/Collection", HttpMethod.GET, card.Collection));
         }
 
-        public void ConfigureServices()
+        public void ConfigureServices(IServiceCollection serviceCollection)
         {
-             //TODO: Implement this configure services.
-            throw new NotImplementedException();
+            serviceCollection.Add<IUsersService, UsersService>();
         }
     }
 }

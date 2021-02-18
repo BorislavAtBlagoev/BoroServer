@@ -32,12 +32,20 @@
             var password = this.Request.FormData["password"];
             var confirmPassword = this.Request.FormData["confirmPassword"];
 
+            if (username == string.Empty ||
+                email == string.Empty ||
+                password == string.Empty ||
+                confirmPassword == string.Empty)
+            {
+                return this.Error("Fields are empty");
+            }
+
             if (!this.usersService.IsPasswordMatch(password, confirmPassword))
             {
                 return this.Error("Passwords doesn't match");
             }
 
-            if (!(this.usersService.IsUsernameAvailable(username) && 
+            if (!(this.usersService.IsUsernameAvailable(username) &&
                 this.usersService.IsEmailAvailable(email)))
             {
                 return this.Error("Username or Email are not available.");
@@ -50,6 +58,11 @@
         public HttpResponse Login(HttpRequest request)
         {
             this.Request = request;
+            if (this.IsSignedIn())
+            {
+                return this.Redirect("/Cards/All");
+            }
+
             return this.View();
         }
 
@@ -59,15 +72,21 @@
             var username = this.Request.FormData["username"];
             var password = this.Request.FormData["password"];
 
+            if (username == string.Empty || 
+                password == string.Empty)
+            {
+                return this.Error("Fields are empty");
+            }
+
             if (this.usersService.IsUserValid(username, password))
             {
-                this.SignIn(username);
+                var userId = this.usersService.GetUserId(username, password);
+                this.SignIn(userId);
+
                 return this.Redirect("/Cards/All");
             }
-            else
-            {
-                return this.Error("Incorrect username or password");
-            }
+
+            return this.Error("Incorrect username or password");
         }
 
         public HttpResponse Logout(HttpRequest request)
@@ -76,6 +95,7 @@
             {
                 this.Request = request;
                 this.SignOut();
+
                 return this.Redirect("/");
             }
             else

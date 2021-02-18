@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Text;
     using System.Collections.Generic;
+    using System.Net;
 
     public static class HttpRequestParser
     {
@@ -88,9 +89,36 @@
                 request.Session = Sessions[sessionCookie.Value];
             }
 
+            if (request.Path.Contains("?"))
+            {
+                var pathParts = request.Path.Split(new char[] { '?' }, 2);
+                request.Path = pathParts[0];
+                request.QueryString = pathParts[1];
+            }
+            else
+            {
+                request.QueryString = string.Empty;
+            }
+
+            SplitParameters(request.QueryString, request.QueryData);
+
             request.Body = sb.ToString();
 
             return request;
+        }
+        private static void SplitParameters(string parametersAsString, IDictionary<string, string> output)
+        {
+            var parameters = parametersAsString.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var parameter in parameters)
+            {
+                var parameterParts = parameter.Split(new[] { '=' }, 2);
+                var name = parameterParts[0];
+                var value = WebUtility.UrlDecode(parameterParts[1]);
+                if (!output.ContainsKey(name))
+                {
+                    output.Add(name, value);
+                }
+            }
         }
     }
 }

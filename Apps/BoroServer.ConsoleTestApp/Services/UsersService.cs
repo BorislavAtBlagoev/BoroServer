@@ -18,16 +18,16 @@
 
         public void CreateUser(string username, string email, string password)
         {
-                var user = new User
-                {
-                    Username = username,
-                    Email = email,
-                    Password = ComputeHash(password),
-                    Role = IdentityRole.User
-                };
+            var user = new User
+            {
+                Username = username,
+                Email = email,
+                Password = ComputeHash(password),
+                Role = IdentityRole.User
+            };
 
-                this.dbContext.Users.Add(user);
-                this.dbContext.SaveChanges();
+            this.dbContext.Users.Add(user);
+            this.dbContext.SaveChanges();
         }
 
         public bool IsEmailAvailable(string email)
@@ -48,8 +48,14 @@
                 .Any(x => x.Username.ToLower() == username.ToLower() && x.Password == ComputeHash(password));
         }
 
-        public bool IsPasswordMatch(string password, string confirmPassword) 
+        public bool IsPasswordMatch(string password, string confirmPassword)
             => password == confirmPassword;
+
+        public string GetUserId(string username, string password)
+            => this.dbContext.Users
+            .FirstOrDefault(x => x.Username == username &&
+            x.Password == ComputeHash(password))
+            .Id;
 
         private static string ComputeHash(string input)
         {
@@ -65,5 +71,6 @@
 
             return hashedInputStringBuilder.ToString();
         }
+
     }
 }
