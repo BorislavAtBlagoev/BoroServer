@@ -5,21 +5,18 @@
 
     public class CardsController : Controller
     {
-        public HttpResponse Add(HttpRequest request)
+        public HttpResponse Add()
         {
-            this.Request = request;
             return this.View();
         }
 
-        public HttpResponse All(HttpRequest request)
+        public HttpResponse All()
         {
-            this.Request = request;
             return this.View();
         }
 
-        public HttpResponse Collection(HttpRequest request)
+        public HttpResponse Collection()
         {
-            this.Request = request;
             return this.View();
         }
     }

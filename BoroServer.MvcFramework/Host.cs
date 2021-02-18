@@ -7,18 +7,20 @@
     using System.Collections.Generic;
 
     using BoroServer.HTTP;
+    using System.IO;
 
     public static class Host
     {
         public static async Task RunAsync(IMvcApplication application, int port = 80)
         {
-            //IServiceCollection serviceCollection = new ServiceCollection();
+            IServiceCollection serviceCollection = new ServiceCollection();
             ICollection<Route> routeTable = new HashSet<Route>();
 
-            //application.ConfigureServices(serviceCollection);
+            application.ConfigureServices(serviceCollection);
             application.Configure(routeTable);
 
-            //AutoRegisterRoutes(routeTable, application, serviceCollection);
+            AutoRegisterStaticFile(routeTable);
+            AutoRegisterRoutes(routeTable, application, serviceCollection);
 
             IHttpServer server = new HttpServer(routeTable);
             await server.StartAsync(port);
@@ -106,6 +108,36 @@
             }
 
             return null;
+        }
+
+        private static void AutoRegisterStaticFile(ICollection<Route> routeTable)
+        {
+            var staticFiles = Directory.GetFiles("wwwroot", "*", SearchOption.AllDirectories);
+            foreach (var staticFile in staticFiles)
+            {
+                var url = staticFile.Replace("wwwroot", string.Empty)
+                    .Replace("\\", "/");
+                routeTable.Add(new Route(url, HttpMethod.GET, (request) =>
+                {
+                    var fileContent = File.ReadAllBytes(staticFile);
+                    var fileExt = new FileInfo(staticFile).Extension;
+                    var contentType = fileExt switch
+                    {
+                        ".txt" => "text/plain",
+                        ".js" => "text/javascript",
+                        ".css" => "text/css",
+                        ".jpg" => "image/jpg",
+                        ".jpeg" => "image/jpg",
+                        ".png" => "image/png",
+                        ".gif" => "image/gif",
+                        ".ico" => "image/vnd.microsoft.icon",
+                        ".html" => "text/html",
+                        _ => "text/plain",
+                    };
+
+                    return new HttpResponse(fileContent, contentType, StatusCode.Ok);
+                }));
+            }
         }
     }
 }

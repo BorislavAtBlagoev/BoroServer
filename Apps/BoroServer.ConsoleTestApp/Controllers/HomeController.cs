@@ -5,9 +5,9 @@
 
     public class HomeController : Controller
     {
-        public HttpResponse Index(HttpRequest request)
+        [HttpGet("/")]
+        public HttpResponse Index()
         {
-            this.Request = request;
             if (this.IsSignedIn())
             {
                 return this.Redirect("/Cards/All");

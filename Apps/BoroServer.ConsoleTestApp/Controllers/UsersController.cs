@@ -13,9 +13,8 @@
             this.usersService = new UsersService();
         }
 
-        public HttpResponse Register(HttpRequest request)
+        public HttpResponse Register()
         {
-            this.Request = request;
             if (this.IsSignedIn())
             {
                 return this.Redirect("/Cards/All");
@@ -24,9 +23,9 @@
             return this.View();
         }
 
-        public HttpResponse DoRegister(HttpRequest request)
+        [HttpPost]
+        public HttpResponse Register(string a)
         {
-            this.Request = request;
             var username = this.Request.FormData["username"];
             var email = this.Request.FormData["email"];
             var password = this.Request.FormData["password"];
@@ -55,9 +54,8 @@
             return this.Redirect("/Users/Login");
         }
 
-        public HttpResponse Login(HttpRequest request)
+        public HttpResponse Login()
         {
-            this.Request = request;
             if (this.IsSignedIn())
             {
                 return this.Redirect("/Cards/All");
@@ -66,9 +64,9 @@
             return this.View();
         }
 
-        public HttpResponse DoLogin(HttpRequest request)
+        [HttpPost]
+        public HttpResponse Login(string a)
         {
-            this.Request = request;
             var username = this.Request.FormData["username"];
             var password = this.Request.FormData["password"];
 
@@ -89,11 +87,10 @@
             return this.Error("Incorrect username or password");
         }
 
-        public HttpResponse Logout(HttpRequest request)
+        public HttpResponse Logout()
         {
             if (this.IsSignedIn())
             {
-                this.Request = request;
                 this.SignOut();
 
                 return this.Redirect("/");
