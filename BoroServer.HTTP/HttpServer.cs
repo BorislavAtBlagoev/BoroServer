@@ -63,7 +63,6 @@
                     .FirstOrDefault(x => x.Path.ToLower() == request.Path.ToLower() && x.Method == request.Method);
 
                 if (route != null)
-                
                 {
                     response = route.Action(request);
                 }

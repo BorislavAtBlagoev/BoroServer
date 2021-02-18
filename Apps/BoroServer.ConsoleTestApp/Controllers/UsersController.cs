@@ -3,6 +3,7 @@
     using BoroServer.HTTP;
     using BoroServer.MvcFramework;
     using BoroServer.ConsoleTestApp.Services;
+    using BoroServer.ConsoleTestApp.DTO;
 
     public class UsersController : Controller
     {
@@ -24,33 +25,29 @@
         }
 
         [HttpPost]
-        public HttpResponse Register(string a)
+        //string username, string email, string password, string confirmPassword
+        public HttpResponse Register(UserDTO userDTO)
         {
-            var username = this.Request.FormData["username"];
-            var email = this.Request.FormData["email"];
-            var password = this.Request.FormData["password"];
-            var confirmPassword = this.Request.FormData["confirmPassword"];
-
-            if (username == string.Empty ||
-                email == string.Empty ||
-                password == string.Empty ||
-                confirmPassword == string.Empty)
+            if (userDTO.Username == string.Empty ||
+                userDTO.Email == string.Empty ||
+                userDTO.Password == string.Empty ||
+                userDTO.ConfirmPassword == string.Empty)
             {
                 return this.Error("Fields are empty");
             }
 
-            if (!this.usersService.IsPasswordMatch(password, confirmPassword))
+            if (!this.usersService.IsPasswordMatch(userDTO.Password, userDTO.ConfirmPassword))
             {
                 return this.Error("Passwords doesn't match");
             }
 
-            if (!(this.usersService.IsUsernameAvailable(username) &&
-                this.usersService.IsEmailAvailable(email)))
+            if (!(this.usersService.IsUsernameAvailable(userDTO.Username) &&
+                this.usersService.IsEmailAvailable(userDTO.Email)))
             {
                 return this.Error("Username or Email are not available.");
             }
 
-            this.usersService.CreateUser(username, email, password);
+            this.usersService.CreateUser(userDTO.Username, userDTO.Email, userDTO.Password);
             return this.Redirect("/Users/Login");
         }
 
@@ -65,11 +62,8 @@
         }
 
         [HttpPost]
-        public HttpResponse Login(string a)
+        public HttpResponse Login(string username, string password)
         {
-            var username = this.Request.FormData["username"];
-            var password = this.Request.FormData["password"];
-
             if (username == string.Empty || 
                 password == string.Empty)
             {
